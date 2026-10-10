@@ -73,11 +73,11 @@ const people = [
 }
 </style> -->
 
-<script setup>
+<!-- <script setup>
 import{ref,computed} from 'vue'
 const progres=0
 const tasks =ref([])
-const filter=ref('all')//'all'|'active'|'done'
+const filter=ref('all')
 const visibleTasks=computed(()=>{
   if(filter.value==='active')return tasks.value.filter(t=>!t.done)
   if(filter.value==='done')return tasks.value.filter(t=>t.done)
@@ -130,4 +130,157 @@ function removeTask(id) {
 
 <style scoped>
 
-</style>
+</style> -->
+
+
+<!-- <script setup>
+import { ref } from 'vue';
+
+// const isAuth=false
+// const age=17
+
+
+// const isVisible=ref(true)
+// function hide(){
+//   isVisible.value=!isVisible.value
+// }
+
+
+// const temp=16
+
+
+// const fruits=["Яблоко","Банан","Апельсин"]
+
+// const students=[
+//   { id: 1, name: 'Айфон 11', price:1800, color: 'Black'},
+//   { id: 2, name: 'Айфон 12', price:1900, color: 'Yelow'},
+//   { id: 3, name: 'Айфон 13', price:2000, color: 'Gray'},
+//   { id: 4, name: 'Айфон 14', price:1900, color: 'Yelow'},
+//   { id: 5, name: 'Айфон 15', price:2000, color: 'Gray'}
+// ]
+
+
+// const students=ref([
+//   {
+//     id:1,
+//     name:"Антон1",
+//     pos:true
+//   },
+//   {
+//     id:2,
+//     name:"Антон2",
+//     pos:true
+//   },
+//   {
+//     id:3,
+//     name:"Антон3",
+//     pos:false
+//   }
+// ])
+// function addStudent(){
+//   students.value.push({
+//     id:2,
+//     name:"Антон2"
+//   })
+// }
+// function deleteStudent(id){
+//   students.value=students.value.filter(student=>student.id!==id)
+// }
+
+</script>
+
+<!-- <template>
+    <h2 v-if="age<12">Холодно</h2>
+    <h2 v-else-if="age<">Подросток</h2>
+    <h2 v-else>Взрослый</h2>
+
+    <p v-if="isVisible">Этот текст можно скрыть</p>
+    <button @click="hide" >Скрыть текст</button>
+
+
+    <p v-if="isVisible">Этот текст можно скрыть</p>
+    <button @click="isVisible=!isVisible">{{isVisible?"скрыть":"показать"}}</button>
+
+
+    <p v-show="isVisible">Этот текст можно скрыть</p>
+    <button @click="isVisible=!isVisible">{{isVisible?"скрыть":"показать"}}</button>
+
+
+    <h2 v-if="temp<0">ОЧХолодно</h2>
+    <h2 v-else-if="temp===0 || temp<=15">Холодно</h2>
+    <h2 v-else-if="temp===16 || temp<=20">Более менее</h2>
+    <h2 v-else>Тепло</h2>
+
+
+    <h2>Фрукты</h2>
+    <h3 v-for="value in fruits">{{ value }}</h3>
+    <h3 v-for="(fruits,index) in fruits":key="index">{{index}}-{{ fruits }}</h3>
+
+
+  <div class="mather">
+    <div v-for="student in students" :key="student.id" class="cards">
+      <div class="card">
+        <div>{{ student.name }}</div>
+        <div>{{ student.price }}</div>
+        <div>{{ student.color }}</div>
+      </div>
+  </div>
+</div>
+
+
+<h2>Студенты</h2>
+<div v-for="student in students">
+  <span v-if="student.pos">{{ student.name }}</span>
+  <button @click="deleteStudent(student.id)">Удалить</button>
+</div>
+<button @click="addStudent">Add</button>
+
+
+
+</template> -->
+<!-- <style scoped>
+.mather{
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  color: azure;
+  width: 100%;
+  height: 110px;
+}
+.cards{
+  border: 1px solid white;
+  border-radius: 7%;
+}
+.card{
+  width: 200px;
+  height: 100px;
+}
+</style> -->
+
+
+<!-- <script setup>
+import { ref,computed } from 'vue';
+const name=ref('')
+const text=ref('')
+function showName(){
+  alert(name.value)
+}
+function showText(){
+  alert(text.value)
+}
+
+const agree=ref(false)
+</script>
+<template>
+    <input v-model="name" type="text" placeholder="Input name">
+  <button @click="showName">Вывод</button>
+    <textarea v-model="text"></textarea>
+    <p>{{ text }}</p>
+  <button @click="showText">Вывод</button>
+
+  <label>
+    <input v-model="agree" type="checkbox"/>
+    Я согласен
+  </label>
+    <p>{{ agree }}</p>
+</template> -->
