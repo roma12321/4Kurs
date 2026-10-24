@@ -393,7 +393,7 @@ function deleteStudent(index){
 
 
 <!-- HTML таблица с массивом и удалинием по кнопке -->
-<script setup>
+<!-- <script setup>
 import { ref } from 'vue'
 const newName = ref('')
 const newSalary = ref(0)
@@ -430,7 +430,7 @@ const users=ref([
       spisok: "Малый"
     },
 ])
- function deleteStudent(index){
+ function deleteStudent(index){gi
   users.value.splice(index,1)
 }
 const addItems = () => {
@@ -599,4 +599,536 @@ button:hover {
   text-decoration: underline;
 }
 
+</style> -->
+
+<!-- Дз -->
+<!-- <script setup>
+import { ref, computed } from 'vue';
+
+const departments = [
+  'IT',
+  'HR',
+  'Маркетинг',
+  'Продажи',
+  'Бухгалтерия'
+];
+
+const skillsList = [
+  'JavaScript',
+  'Vue.js',
+  'HTML/CSS',
+  'Git',
+  'SQL',
+  'Английский'
+];
+
+const employees = ref([
+  {
+    id: 1,
+    name: 'Петров Иван',
+    age: 28,
+    department: 'IT',
+    salary: 120000,
+    active: true,
+    skills: ['JavaScript', 'Vue.js']
+  },
+  {
+    id: 2,
+    name: 'Сидорова Анна',
+    age: 34,
+    department: 'Маркетинг',
+    salary: 95000,
+    active: true,
+    skills: ['Маркетинг', 'Английский']
+  },
+  {
+    id: 3,
+    name: 'Смирнов Олег',
+    age: 41,
+    department: 'Бухгалтерия',
+    salary: 110000,
+    active: false,
+    skills: ['SQL', 'Бухгалтерия']
+  }
+]);
+const newName = ref('');
+const newAge = ref(null);
+const newSalary = ref(null);
+const newDepartment = ref('');
+const newActive = ref(true);
+const newSkills = ref([]);
+
+const isFormValid = computed(() => {
+  if (!newName.value.trim()) return false;
+  if (newAge.value === null || newAge.value < 18) return false;
+  if (!newDepartment.value) return false;
+  if (newSalary.value === null || newSalary.value <= 0) return false;
+  return true;
+});
+
+function addEmployee() {
+  const newId = Date.now(); 
+  employees.value.push({
+    id: newId,
+    name: newName.value,
+    age: newAge.value,
+    department: newDepartment.value,
+    salary: newSalary.value,
+    active: newActive.value,
+    skills: [...newSkills.value] 
+  });
+  newName.value = '';
+  newAge.value = null;
+  newSalary.value = null;
+  newDepartment.value = '';
+  newActive.value = true;
+  newSkills.value = [];
+}
+
+function deleteEmployee(id) {
+  employees.value = employees.value.filter(emp => emp.id !== id);
+}
+
+function toggleStatus(id) {
+  const emp = employees.value.find(e => e.id === id);
+  if (emp) {
+    emp.active = !emp.active;
+  }
+}
+</script>
+
+<template>
+  <div class="app-container">
+
+    <div class="form-block">
+      <div class="row">
+        <input
+          type="text"
+          placeholder="Имя"
+          v-model="newName"
+        />
+        <input
+          type="number"
+          placeholder="Возраст"
+          v-model.number="newAge"
+        />
+        <select v-model="newDepartment">
+          <option value="" disabled>Выберите отдел</option>
+          <option
+            v-for="dept in departments"
+            :key="dept"
+            :value="dept"
+          >
+            {{ dept }}
+          </option>
+        </select>
+      </div>
+
+      <div class="row">
+        <input
+          type="number"
+          placeholder="Зарплата"
+          v-model.number="newSalary"
+        />
+
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="newActive" />
+          Статус: работает
+        </label>
+      </div>
+
+      <div class="skills-block">
+        <span>Навыки:</span>
+        <div class="checkboxes">
+          <label
+            v-for="skill in skillsList"
+            :key="skill"
+            class="checkbox-item"
+          >
+            <input
+              type="checkbox"
+              :value="skill"
+              v-model="newSkills"
+            />
+            {{ skill }}
+          </label>
+        </div>
+      </div>
+
+      <button
+        @click="addEmployee"
+        :disabled="!isFormValid"
+      >
+        Добавить сотрудника
+      </button>
+    </div>
+
+    <table class="employees-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Имя</th>
+          <th>Возраст</th>
+          <th>Отдел</th>
+          <th>Зарплата</th>
+          <th>Статус</th>
+          <th>Навыки</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="emp in employees"
+          :key="emp.id"
+        >
+          <td>{{ emp.id }}</td>
+          <td>{{ emp.name }}</td>
+          <td>{{ emp.age }}</td>
+          <td>{{ emp.department }}</td>
+          <td>{{ emp.salary }} ₽</td>
+          <td>
+            <span v-if="emp.active">Работает</span>
+            <span v-else>Уволен</span>
+          </td>
+          <td>
+            {{ emp.skills.join(', ') || '—' }}
+          </td>
+
+          <td class="actions">
+            <button
+              @click="toggleStatus(emp.id)"
+            >
+              {{ emp.active ? 'Уволить' : 'Восстановить' }}
+            </button>
+            <button
+              @click="deleteEmployee(emp.id)"
+              class="btn-delete"
+            >
+              Удалить
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<style scoped>
+.app-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-block {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 160px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.skills-block {
+  margin-bottom: 1rem;
+}
+
+.skills-block span {
+  font-weight: 600;
+  margin-right: 1rem;
+}
+
+.checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1976d2;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  margin-left: 0.5rem;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+.employees-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.employees-table th,
+.employees-table td {
+  border: 1px solid #e0e0e0;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+
+.employees-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+.actions button {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+}
+</style> -->
+
+
+
+
+
+
+<!-- создание динамического класса -->
+<script setup>
+import { computed, ref } from 'vue'
+// const active=ref(true)
+// const className='qwerty'
+// const isActive=ref(true)
+// const hasError=ref(folse)
+
+// const employees=ref([
+//   {
+//     id:1,
+//     name:"qwe",
+//     active:true
+//   },
+//   {
+//     id:2,
+//     name:"qwer",
+//     active:false
+//   }
+// ])
+// function toggleStatus(id) {
+//   const emp = employees.value.find(e => e.id === id)
+//   if (emp) {
+//     emp.active = !emp.active 
+//   }
+// }
+
+
+// Отправка форм данных из инпута в консоль
+// const name=ref('')
+// const age=ref(0)
+// function sendForm(){
+//   console.log(name.value)
+//   console.log(age.value)
+// }
+
+// получение знач по событию
+// const num=ref(0)
+// const rezult=ref(0)
+// function calc(){
+//   rezult.value=num.value*num.value
+// }
+
+
+// работа с select
+// const city=ref('')
+const days=ref([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31])
+const mesac=ref(["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"])
+const god=ref([2024,2025,2026,2027])
+const nedela=ref('')
+const mesacc=ref('')
+const godd=ref('')
+function isYears(year){
+  return godd %400===0  ||(godd%4===0&&godd%100!==0)
+}
+const daysInMonth=computed(()=>{
+  if(!mesacc.value){
+    return 31
+  }
+  if(mesacc.value==="Февраль"){
+    return isYears(godd.value)?29:28
+  }
+  if(mesacc.value==="Апрель"||mesacc.value==="Июнь"||mesacc.value==="Сентярь"||mesacc.value==="Ноябрь"||){
+    return 30
+  }
+})
+
+
+</script>
+
+<template>
+  
+  <!-- <div :class="{active:active}">
+    Пользователь
+  </div>
+  <button @click="active=!active">dasfasdf</button> -->
+
+
+<!-- <div :class="{active:isActive,error:hasError}">
+    Пользователь
+  </div>
+  <button @click="active=!active" :class="className">dasfasdf</button> 
+</template> -->
+
+
+  <!-- <p :class="isActive?'succes':'error'">sdfsdfsdfsf</p> -->
+
+
+  <!-- <li>
+  <div v-for="employee in employees":key="employee.id"
+  class="employee"
+  :class="{working:employee.active,
+  nerab:!employee.active}"> 
+    {{ employee.name }}
+    <span v-if="employee.active">Уволен</span>  
+    <span v-else>Работает</span>  
+     <button @click="toggleStatus(employee.id)">
+          {{ employee.active ? 'Уволить' : 'Восстановить' }}
+        </button>
+  </div>
+  </li> -->
+
+  <!-- Отправка форм данных из инпута в консоль -->
+  <!-- <form @submit.prevent="sendForm">
+    <input 
+    v-model="name"
+    type="text"
+    placeholder="Введите имя"
+    >
+    <input 
+    v-model="age"
+    type="number"
+    placeholder="Введите возвраст"
+    >
+    <label>
+    <input type="checkbox" v-model="agree">Я согласен с правилами
+    </label>
+    >
+    <button type="submit" :disabled="!agree">Отправить</button>
+  </form>   -->
+
+  <!-- получение знач по событию
+  <input 
+  type="text"
+  v-model.number="num"
+  placeholder="Введите число">
+  <button @click="calc">Вычеслить квадрат</button>
+  <p>{{ rezult }}</p> -->
+
+  
+  <!-- работа с select -->
+   <!-- <h2>В каком городе выживете</h2>
+  <select v-model="city">
+      <option value="">Выбери город</option>
+      <option value="краснодар">краснодар</option>
+      <option value="москва">москва</option>
+      <option value="сочи">сочи</option>
+  </select>
+  <p>
+    Вы выбрали:{{ city }}
+  </p>
+  <h2>Выберите название дня недели</h2>
+  <select v-model="nedela">
+      <option value="">Выберите недели дни</option>
+      <option value="Пн">Пн</option>
+      <option value="Вт">Вт</option>
+      <option value="Ср">Ср</option>
+      <option value="Чт">Чт</option>
+      <option value="Пт">Пт</option>
+      <option value="Сб">Сб</option>
+      <option value="Вс">Вс</option>
+  </select>
+  <p>
+    Вы выбрали:{{ nedela}}
+  </p> -->
+  <h2>Выберите дату</h2>
+   <select v-model="godd">
+      <option v-for="item in god":key="item":value="item">{{ item }}</option>
+  </select>
+  <select v-model="mesacc">
+      <option v-for="item in mesac":key="item":value="item">{{ item }}</option>
+  </select>
+  <select v-model="nedela">
+      <option v-for="item in days":key="item":value="item">{{ item }}</option>
+  </select>
+  <p>
+    Вы выбрали:{{ nedela}}:{{ mesacc }}:{{ godd }}
+  </p>
+
+
+</template>
+<style scoped>
+div{
+  width: 400px;
+}
+.active{
+  color: blue;
+  font-weight: bold;
+}
+.employee{
+  padding: 15px;
+  margin: 10px;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: aliceblue;
+  color: black;
+}
+.working{
+  background-color: aqua;
+}
+.nerab{
+  background-color: red;
+}
 </style>
