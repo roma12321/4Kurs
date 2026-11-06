@@ -705,7 +705,7 @@ button:hover {
 
 </style> -->
 
-<script setup>
+<!-- <script setup>
 import { ref, computed } from 'vue';
 
 const departments = [
@@ -1033,5 +1033,499 @@ button:disabled {
 .actions button {
   font-size: 0.85rem;
   padding: 0.3rem 0.6rem;
+}
+</style> -->
+<script setup>
+import { ref, computed } from 'vue';
+
+const genres = ['Action', 'RPG', 'Strategy', 'Simulator', 'Racing', 'Shooter', 'Sandbox', 'Other'];
+const platforms = ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
+
+const games = ref([
+  { id: 1, title: 'Minecraft', genre: 'Sandbox', platform: 'PC', year: 2011, rating: 9, completed: true, favorite: true },
+  { id: 2, title: 'The Witcher 3: Wild Hunt', genre: 'RPG', platform: 'PC', year: 2015, rating: 10, completed: true, favorite: false },
+  { id: 3, title: 'God of War Ragnarok', genre: 'Action', platform: 'PlayStation', year: 2022, rating: 9, completed: false, favorite: true },
+  { id: 4, title: 'Forza Horizon 5', genre: 'Racing', platform: 'Xbox', year: 2021, rating: 8, completed: false, favorite: false },
+  { id: 5, title: 'Stardew Valley', genre: 'Simulator', platform: 'Nintendo Switch', year: 2016, rating: 9, completed: true, favorite: true }
+]);
+
+const newGame = ref({
+  title: '',
+  genre: '',
+  platform: '',
+  year: null,
+  rating: null,
+  completed: false,
+  favorite: false
+});
+
+const searchQuery = ref('');
+const genreFilter = ref('');
+const statusFilter = ref('all');
+
+const editingId = ref(null);
+const editGame = ref({});
+
+const isFormValid = computed(() =>
+  newGame.value.title.trim() &&
+  newGame.value.genre &&
+  newGame.value.platform &&
+  newGame.value.year &&
+  newGame.value.rating >= 1 &&
+  newGame.value.rating <= 10
+);
+
+const filteredGames = computed(() => {
+  let result = games.value;
+  if (searchQuery.value) {
+    result = result.filter(g => g.title.toLowerCase().includes(searchQuery.value.toLowerCase()));
+  }
+  if (genreFilter.value) {
+    result = result.filter(g => g.genre === genreFilter.value);
+  }
+  if (statusFilter.value === 'completed') {
+    result = result.filter(g => g.completed);
+  } else if (statusFilter.value === 'not-completed') {
+    result = result.filter(g => !g.completed);
+  } else if (statusFilter.value === 'favorites') {
+    result = result.filter(g => g.favorite);
+  }
+  return result;
+});
+
+const stats = computed(() => {
+  const total = games.value.length;
+  const completed = games.value.filter(g => g.completed).length;
+  const favorites = games.value.filter(g => g.favorite).length;
+  const avgRating = total
+    ? (games.value.reduce((sum, g) => sum + g.rating, 0) / total).toFixed(1)
+    : 0;
+  return { total, completed, notCompleted: total - completed, favorites, avgRating };
+});
+
+function addGame() {
+  if (!isFormValid.value) return;
+  games.value.push({
+    id: Date.now(),
+    ...newGame.value
+  });
+  newGame.value = {
+    title: '',
+    genre: '',
+    platform: '',
+    year: null,
+    rating: null,
+    completed: false,
+    favorite: false
+  };
+}
+
+function deleteGame(id) {
+  games.value = games.value.filter(game => game.id !== id);
+}
+
+function toggle(game, field) {
+  game[field] = !game[field];
+}
+
+function startEdit(game) {
+  editingId.value = game.id;
+  editGame.value = { ...game };
+}
+
+function saveEdit() {
+  const game = games.value.find(g => g.id === editingId.value);
+  if (game) {
+    Object.assign(game, editGame.value);
+  }
+  editingId.value = null;
+}
+
+function cancelEdit() {
+  editingId.value = null;
+}
+</script>
+
+<template>
+  <div class="app-container">
+
+    <header class="site-header">
+      <h1 class="logo">🎮 GameHub</h1>
+    </header>
+
+    <div class="stats-block">
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Всего игр</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.completed }}</div>
+        <div class="stat-label">Пройдено</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.notCompleted }}</div>
+        <div class="stat-label">Не пройдено</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.favorites }}</div>
+        <div class="stat-label">Избранных</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.avgRating }}</div>
+        <div class="stat-label">Средний рейтинг</div>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <h2>Добавить игру</h2>
+      <div class="row">
+        <input type="text" placeholder="Название игры" v-model.trim="newGame.title" />
+        <select v-model="newGame.genre">
+          <option value="" disabled>Выберите жанр</option>
+          <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+        </select>
+        <select v-model="newGame.platform">
+          <option value="" disabled>Выберите платформу</option>
+          <option v-for="platform in platforms" :key="platform" :value="platform">{{ platform }}</option>
+        </select>
+      </div>
+      <div class="row">
+        <input type="number" placeholder="Год выпуска" v-model.number="newGame.year" />
+        <input type="number" placeholder="Рейтинг (1–10)" min="1" max="10" v-model.number="newGame.rating" />
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="newGame.completed" />
+          Игра пройдена
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="newGame.favorite" />
+          Добавить в избранное
+        </label>
+      </div>
+      <button @click="addGame" :disabled="!isFormValid">Добавить игру</button>
+    </div>
+
+    <div class="filters-block">
+      <h2>Поиск и фильтры</h2>
+      <div class="row">
+        <input type="text" placeholder="Поиск игры..." v-model.trim="searchQuery" />
+        <select v-model="genreFilter">
+          <option value="">Все жанры</option>
+          <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+        </select>
+        <select v-model="statusFilter">
+          <option value="all">Все игры</option>
+          <option value="completed">Пройденные</option>
+          <option value="not-completed">Не пройденные</option>
+          <option value="favorites">Избранные</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="cards">
+      <p v-if="filteredGames.length === 0" class="empty">Игры не найдены</p>
+
+      <div v-for="game in filteredGames" :key="game.id" class="card"
+           :class="{ 'is-completed': game.completed, 'is-favorite': game.favorite }">
+
+        <template v-if="editingId !== game.id">
+          <div class="card-header">
+            {{ game.title }}
+            <span v-if="game.favorite" class="fav-mark">★</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Жанр:</span>
+            <span>{{ game.genre }}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Платформа:</span>
+            <span>{{ game.platform }}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Год выпуска:</span>
+            <span>{{ game.year }}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Рейтинг:</span>
+            <span>{{ game.rating }}/10</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Статус:</span>
+            <span v-if="game.completed" class="status-done">Пройдена</span>
+            <span v-else class="status-not">Не пройдена</span>
+          </div>
+          <div class="actions">
+            <button @click="toggle(game, 'completed')">
+              {{ game.completed ? 'Вернуть в список прохождения' : 'Отметить как пройденную' }}
+            </button>
+            <button class="btn-fav" @click="toggle(game, 'favorite')">
+              {{ game.favorite ? 'Удалить из избранного' : 'Добавить в избранное' }}
+            </button>
+            <button @click="startEdit(game)">Редактировать</button>
+            <button class="btn-delete" @click="deleteGame(game.id)">Удалить</button>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="card-header">Редактирование игры</div>
+          <div class="edit-row">
+            <input type="text" v-model.trim="editGame.title" placeholder="Название" />
+          </div>
+          <div class="edit-row">
+            <select v-model="editGame.genre">
+              <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+            </select>
+            <select v-model="editGame.platform">
+              <option v-for="platform in platforms" :key="platform" :value="platform">{{ platform }}</option>
+            </select>
+          </div>
+          <div class="edit-row">
+            <input type="number" v-model.number="editGame.year" placeholder="Год" />
+            <input type="number" v-model.number="editGame.rating" min="1" max="10" placeholder="Рейтинг" />
+          </div>
+          <div class="actions">
+            <button @click="saveEdit">Сохранить</button>
+            <button @click="cancelEdit">Отмена</button>
+          </div>
+        </template>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      GameHub — библиотека ваших игр © 2026
+    </footer>
+
+  </div>
+</template>
+
+<style scoped>
+.app-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.site-header {
+  text-align: center;
+  padding: 1rem;
+  background-color: #2196f3;
+  border-radius: 8px;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.stats-block {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #2196f3;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.form-block,
+.filters-block {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 160px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #2196f3;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1976d2;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+.btn-fav {
+  background-color: #f59e0b;
+}
+
+.btn-fav:hover {
+  background-color: #d97706;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card.is-completed {
+  border-left: 4px solid #22c55e;
+}
+
+.card.is-favorite {
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.card-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.fav-mark {
+  color: #f59e0b;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.label {
+  color: #666;
+}
+
+.status-done {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.status-not {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.actions button {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.edit-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.edit-row input,
+.edit-row select {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 2rem;
+  border: 1px dashed #e0e0e0;
+  border-radius: 8px;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  color: #888;
+  font-size: 0.85rem;
+  border-top: 1px solid #e0e0e0;
 }
 </style>
