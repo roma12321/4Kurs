@@ -1,4 +1,15 @@
-<!-- <script setup>
+<!-- 
+<script setup>
+import { ref, computed } from 'vue';
+
+const games = [
+  { id: 1, name: 'CS2', game: 'RPG', rating: 9.7 },
+  { id: 2, name: 'Dota 2', game: 'Action RPG', rating: 9.2 },
+  { id: 3, name: 'CS0', game: 'Puzzle', rating: 9.5 },
+  { id: 4, name: 'Dota 0', game: 'Simulation', rating: 9.0 },
+  { id: 5, name: 'CS1', game: 'Platformer', rating: 9.3 },
+  { id: 6, name: 'Dota 1', game: 'Metroidvania', rating: 9.4 },
+]
 const people = [
   { id: 1, name: 'Петров Иван Артурович', date: '2000-01-15', city: 'Москва' },
   { id: 2, name: 'Петрова Анна Артуровна', date: '2000-02-20', city: 'Санкт-Петербург' },
@@ -11,9 +22,50 @@ const people = [
   { id: 9, name: 'Петров Артём Артурович', date: '2000-09-07', city: 'Омск' },
   { id: 10, name: 'Петрова София Артуровна', date: '2000-10-25', city: 'Ростов-на-Дону' }
 ];
+const selectedGameType = ref('');
+const filteredGames = computed(() => {
+  if (!selectedGameType.value) return games;
+  return games.filter(g => g.game === selectedGameType.value);
+});
+const gameTypes = computed(() => {
+  const unique = new Set(games.map(g => g.game));
+  return Array.from(unique);
+});
 </script>
   
 <template>
+  <div class="board">
+    <h2>Рейтинг игр</h2>
+
+    <div class="tags">
+      <button
+        class="tag"
+        :class="{ active: !selectedGameType }"
+        @click="selectedGameType = ''"
+      >
+        Все
+      </button>
+      <button
+        v-for="type in gameTypes"
+        :key="type"
+        class="tag"
+        :class="{ active: selectedGameType === type }"
+        @click="selectedGameType = type"
+      >
+      {{ type }}
+      </button>
+    </div>
+    <ul class="list">
+      <li v-for="game in filteredGames" :key="game.id" class="item">
+        <span class="name">{{ game.name }}</span>
+        <span class="type">{{ game.game }}</span>
+        <span class="rate">{{ game.rating }}</span>
+      </li>
+    </ul>
+    <p v-if="filteredGames.length === 0" class="empty">
+      Ничего не найдено
+    </p>
+  </div>
   <div>
   <div class="people">
     <h2>Список людей</h2>
@@ -31,49 +83,101 @@ const people = [
       </div>
     </div>
     </div>
+
   </div>
 </template>
 
 <style scoped>
-.people {
-  padding: 24px;
+.board {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1rem;
   font-family: Arial, sans-serif;
-}
-
-.cards {
-  color:black;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.card {
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 16px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.card-header {
-  font-weight: bold;
-  font-size: 1.1rem;
-  color: #222;
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-.card-row {
+.tags {
   display: flex;
-  align-items: center;
-  margin: 6px 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
-.label {
+.tag {
+  padding: 0.5rem 0.8rem;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  background: #eaeaea;
+  border-color: #ccc;
+}
+
+.tag.active {
+  background-color: #2196f3;
+  border-color: #2196f3;
+  color: white;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.name {
+  font-weight: 600;
+}
+
+.type {
   color: #666;
   font-size: 0.9rem;
 }
-</style> -->
 
-<!-- <script setup>
+
+.rate {
+  background-color: #2196f3;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+</style>
+
+
+
+<script setup>
 import{ref,computed} from 'vue'
 const progres=0
 const tasks =ref([])
@@ -130,66 +234,66 @@ function removeTask(id) {
 
 <style scoped>
 
-</style> -->
+</style> 
 
 
-<!-- <script setup>
+ <script setup>
 import { ref } from 'vue';
 
-// const isAuth=false
-// const age=17
+const isAuth=false
+const age=17
 
 
-// const isVisible=ref(true)
-// function hide(){
-//   isVisible.value=!isVisible.value
-// }
+const isVisible=ref(true)
+function hide(){
+  isVisible.value=!isVisible.value
+}
 
 
-// const temp=16
+const temp=16
 
 
-// const fruits=["Яблоко","Банан","Апельсин"]
+const fruits=["Яблоко","Банан","Апельсин"]
 
-// const students=[
-//   { id: 1, name: 'Айфон 11', price:1800, color: 'Black'},
-//   { id: 2, name: 'Айфон 12', price:1900, color: 'Yelow'},
-//   { id: 3, name: 'Айфон 13', price:2000, color: 'Gray'},
-//   { id: 4, name: 'Айфон 14', price:1900, color: 'Yelow'},
-//   { id: 5, name: 'Айфон 15', price:2000, color: 'Gray'}
-// ]
+const students=[
+  { id: 1, name: 'Айфон 11', price:1800, color: 'Black'},
+  { id: 2, name: 'Айфон 12', price:1900, color: 'Yelow'},
+  { id: 3, name: 'Айфон 13', price:2000, color: 'Gray'},
+  { id: 4, name: 'Айфон 14', price:1900, color: 'Yelow'},
+  { id: 5, name: 'Айфон 15', price:2000, color: 'Gray'}
+]
 
 
-// const students=ref([
-//   {
-//     id:1,
-//     name:"Антон1",
-//     pos:true
-//   },
-//   {
-//     id:2,
-//     name:"Антон2",
-//     pos:true
-//   },
-//   {
-//     id:3,
-//     name:"Антон3",
-//     pos:false
-//   }
-// ])
-// function addStudent(){
-//   students.value.push({
-//     id:2,
-//     name:"Антон2"
-//   })
-// }
-// function deleteStudent(id){
-//   students.value=students.value.filter(student=>student.id!==id)
-// }
+const students=ref([
+  {
+    id:1,
+    name:"Антон1",
+    pos:true
+  },
+  {
+    id:2,
+    name:"Антон2",
+    pos:true
+  },
+  {
+    id:3,
+    name:"Антон3",
+    pos:false
+  }
+])
+function addStudent(){
+  students.value.push({
+    id:2,
+    name:"Антон2"
+  })
+}
+function deleteStudent(id){
+  students.value=students.value.filter(student=>student.id!==id)
+}
 
 </script>
 
-<!-- <template>
+<template>
     <h2 v-if="age<12">Холодно</h2>
     <h2 v-else-if="age<">Подросток</h2>
     <h2 v-else>Взрослый</h2>
@@ -234,8 +338,8 @@ import { ref } from 'vue';
   <button @click="deleteStudent(student.id)">Удалить</button>
 </div>
 <button @click="addStudent">Add</button>
-</template> -->
-<!-- <style scoped>
+</template> 
+<style scoped>
 .mather{
   margin-top: 20px;
   display: flex;
@@ -252,10 +356,10 @@ import { ref } from 'vue';
   width: 200px;
   height: 100px;
 }
-</style> -->
+</style> 
 
 
-<!-- <script setup>
+<script setup>
 import { ref,computed } from 'vue';
 const name=ref('')
 const text=ref('')
@@ -279,11 +383,11 @@ const agree=ref(false)
     Я согласен
   </label>
     <p>{{ agree }}</p>
-</template> -->
+</template> 
 
 
-<!-- Блокировка инпут полей по кнопке со сменой названия и проверки на текст в поле  -->
-<!-- <script setup>
+Блокировка инпут полей по кнопке со сменой названия и проверки на текст в поле  
+<script setup>
 import {ref,computed} from 'vue'
 const isDisabled=ref("")
 const lock=ref("")
@@ -296,11 +400,11 @@ const age=ref()
     <input type="number" v-model="age" :disabled="lock">
   </lable> 
   <button :disabled="!isDisabled || !age">Отправить</button>
-</template> -->
+</template> 
 
 
-<!-- Блокировка инпут полей по галочке  -->
-<!-- <script setup>
+Блокировка инпут полей по галочке 
+<script setup>
 import {ref,computed} from 'vue'
 const age=ref()
 </script>
@@ -309,11 +413,11 @@ const age=ref()
     <input type="number" v-model="age" :disabled="age">
   </lable> 
   <input type="checkbox" v-model="age">
-</template> -->
+</template> 
 
 
-<!-- Добавление в список через инпут и кнопку -->
-<!-- <script setup>
+Добавление в список через инпут и кнопку 
+<script setup>
 import { ref } from 'vue'
 const items=ref(["sdlf","lskdg"])
 const text=ref("")
@@ -331,11 +435,11 @@ function addItems(){
     <input type="text" v-model="text">
   </label>
 <button @click="addItems">Add</button>
-</template> -->
+</template>
 
 
-<!-- Таже но есть добавление в начало и конец -->
-<!-- <script setup>
+Таже но есть добавление в начало и конец 
+<script setup>
 import { ref } from 'vue'
 const items=ref(["sdlf","lskdg"])
 const text=ref("")
@@ -358,11 +462,11 @@ function addItems1(){
   </label>
 <button @click="addItems1">Add в начала</button>
 <button @click="addItems">Add в конец </button>
-</template> -->
+</template> 
 
 
-<!-- удаление и добавление в конец и начала списка  -->
-<!-- <script setup>
+удаление и добавление в конец и начала списка 
+<script setup>
 import { ref } from 'vue'
 const items=ref([])
 const text=ref("")
@@ -389,11 +493,11 @@ function deleteStudent(index){
   </label>
 <button @click="addItems1">Add в начала</button>
 <button @click="addItems">Add в конец </button>
-</template> -->
+</template>
 
 
-<!-- HTML таблица с массивом и удалинием по кнопке -->
-<!-- <script setup>
+HTML таблица с массивом и удалинием по кнопке 
+<script setup>
 import { ref } from 'vue'
 const newName = ref('')
 const newSalary = ref(0)
@@ -430,7 +534,7 @@ const users=ref([
       spisok: "Малый"
     },
 ])
- function deleteStudent(index){gi
+ function deleteStudent(index){
   users.value.splice(index,1)
 }
 const addItems = () => {
@@ -601,7 +705,6 @@ button:hover {
 
 </style> -->
 
-<!-- Дз -->
 <!-- <script setup>
 import { ref, computed } from 'vue';
 
@@ -938,197 +1041,580 @@ button:disabled {
 
 
 
-<!-- создание динамического класса -->
-<script setup>
-import { computed, ref } from 'vue'
-// const active=ref(true)
-// const className='qwerty'
-// const isActive=ref(true)
-// const hasError=ref(folse)
-
-// const employees=ref([
-//   {
-//     id:1,
-//     name:"qwe",
-//     active:true
-//   },
-//   {
-//     id:2,
-//     name:"qwer",
-//     active:false
-//   }
-// ])
-// function toggleStatus(id) {
-//   const emp = employees.value.find(e => e.id === id)
-//   if (emp) {
-//     emp.active = !emp.active 
-//   }
-// }
 
 
-// Отправка форм данных из инпута в консоль
-// const name=ref('')
-// const age=ref(0)
-// function sendForm(){
-//   console.log(name.value)
-//   console.log(age.value)
-// }
+<!-- Дз на 07.11 -->
+<!-- <script setup>
+import { ref, computed } from 'vue';
 
-// получение знач по событию
-// const num=ref(0)
-// const rezult=ref(0)
-// function calc(){
-//   rezult.value=num.value*num.value
-// }
+const genres = ['Action', 'RPG', 'Strategy', 'Simulator', 'Racing', 'Shooter', 'Sandbox', 'Other'];
+const platforms = ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
 
+const games = ref([
+  { id: 1, title: 'Minecraft', genre: 'Sandbox', platform: 'PC', year: 2011, rating: 9, completed: true, favorite: true },
+  { id: 2, title: 'The Witcher 3: Wild Hunt', genre: 'RPG', platform: 'PC', year: 2015, rating: 10, completed: true, favorite: false },
+  { id: 3, title: 'God of War Ragnarok', genre: 'Action', platform: 'PlayStation', year: 2022, rating: 9, completed: false, favorite: true },
+  { id: 4, title: 'Forza Horizon 5', genre: 'Racing', platform: 'Xbox', year: 2021, rating: 8, completed: false, favorite: false },
+  { id: 5, title: 'Stardew Valley', genre: 'Simulator', platform: 'Nintendo Switch', year: 2016, rating: 9, completed: true, favorite: true }
+]);
 
-// работа с select
-// const city=ref('')
-const days=ref([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31])
-const mesac=ref(["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"])
-const god=ref([2024,2025,2026,2027])
-const nedela=ref('')
-const mesacc=ref('')
-const godd=ref('')
-function isYears(year){
-  return godd %400===0  ||(godd%4===0&&godd%100!==0)
+const newGame = ref({
+  title: '',
+  genre: '',
+  platform: '',
+  year: null,
+  rating: null,
+  completed: false,
+  favorite: false
+});
+
+const searchQuery = ref('');
+const genreFilter = ref('');
+const statusFilter = ref('all');
+
+const editingId = ref(null);
+const editGame = ref({});
+
+const isFormValid = computed(() =>
+  newGame.value.title.trim() &&
+  newGame.value.genre &&
+  newGame.value.platform &&
+  newGame.value.year &&
+  newGame.value.rating >= 1 &&
+  newGame.value.rating <= 10
+);
+
+const filteredGames = computed(() => {
+  let result = games.value;
+  if (searchQuery.value) {
+    result = result.filter(g => g.title.toLowerCase().includes(searchQuery.value.toLowerCase()));
+  }
+  if (genreFilter.value) {
+    result = result.filter(g => g.genre === genreFilter.value);
+  }
+  if (statusFilter.value === 'completed') {
+    result = result.filter(g => g.completed);
+  } else if (statusFilter.value === 'not-completed') {
+    result = result.filter(g => !g.completed);
+  } else if (statusFilter.value === 'favorites') {
+    result = result.filter(g => g.favorite);
+  }
+  return result;
+});
+
+const stats = computed(() => {
+  const total = games.value.length;
+  const completed = games.value.filter(g => g.completed).length;
+  const favorites = games.value.filter(g => g.favorite).length;
+  const avgRating = total
+    ? (games.value.reduce((sum, g) => sum + g.rating, 0) / total).toFixed(1)
+    : 0;
+  return { total, completed, notCompleted: total - completed, favorites, avgRating };
+});
+
+function addGame() {
+  if (!isFormValid.value) return;
+  games.value.push({
+    id: Date.now(),
+    ...newGame.value
+  });
+  newGame.value = {
+    title: '',
+    genre: '',
+    platform: '',
+    year: null,
+    rating: null,
+    completed: false,
+    favorite: false
+  };
 }
-const daysInMonth=computed(()=>{
-  if(!mesacc.value){
-    return 31
-  }
-  if(mesacc.value==="Февраль"){
-    return isYears(godd.value)?29:28
-  }
-  if(mesacc.value==="Апрель"||mesacc.value==="Июнь"||mesacc.value==="Сентярь"||mesacc.value==="Ноябрь"||){
-    return 30
-  }
-})
 
+function deleteGame(id) {
+  games.value = games.value.filter(game => game.id !== id);
+}
 
+function toggle(game, field) {
+  game[field] = !game[field];
+}
+
+function startEdit(game) {
+  editingId.value = game.id;
+  editGame.value = { ...game };
+}
+
+function saveEdit() {
+  const game = games.value.find(g => g.id === editingId.value);
+  if (game) {
+    Object.assign(game, editGame.value);
+  }
+  editingId.value = null;
+}
+
+function cancelEdit() {
+  editingId.value = null;
+}
 </script>
 
 <template>
-  
-  <!-- <div :class="{active:active}">
-    Пользователь
+  <div class="app-container">
+    <header class="site-header">
+      <h1 class="logo">🎮 GameHub</h1>
+    </header>
+
+    <div class="stats-block">
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Всего игр</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.completed }}</div>
+        <div class="stat-label">Пройдено</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.notCompleted }}</div>
+        <div class="stat-label">Не пройдено</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.favorites }}</div>
+        <div class="stat-label">Избранных</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.avgRating }}</div>
+        <div class="stat-label">Средний рейтинг</div>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <h2>Добавить игру</h2>
+      <div class="row">
+        <input type="text" placeholder="Название игры" v-model.trim="newGame.title" />
+        <select v-model="newGame.genre">
+          <option value="" disabled>Выберите жанр</option>
+          <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+        </select>
+        <select v-model="newGame.platform">
+          <option value="" disabled>Выберите платформу</option>
+          <option v-for="platform in platforms" :key="platform" :value="platform">{{ platform }}</option>
+        </select>
+      </div>
+      <div class="row">
+        <input type="number" placeholder="Год выпуска" v-model.number="newGame.year" />
+        <input type="number" placeholder="Рейтинг (1–10)" min="1" max="10" v-model.number="newGame.rating" />
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="newGame.completed" />
+          Игра пройдена
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="newGame.favorite" />
+          Добавить в избранное
+        </label>
+      </div>
+      <button @click="addGame" :disabled="!isFormValid">Добавить игру</button>
+    </div>
+
+    <div class="filters-block">
+      <h2>Поиск и фильтры</h2>
+      <div class="row">
+        <input type="text" placeholder="Поиск игры..." v-model.trim="searchQuery" />
+        <select v-model="genreFilter">
+          <option value="">Все жанры</option>
+          <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+        </select>
+        <select v-model="statusFilter">
+          <option value="all">Все игры</option>
+          <option value="completed">Пройденные</option>
+          <option value="not-completed">Не пройденные</option>
+          <option value="favorites">Избранные</option>
+        </select>
+      </div>
+    </div>
+    <div class="cards">
+      <p v-if="filteredGames.length === 0" class="empty">Игры не найдены</p>
+      <div v-for="game in filteredGames" :key="game.id" class="card"
+           :class="{ 'is-completed': game.completed, 'is-favorite': game.favorite }">
+
+        <template v-if="editingId !== game.id">
+          <div class="card-header">
+            {{ game.title }}
+            <span v-if="game.favorite" class="fav-mark">★</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Жанр:</span>
+            <span>{{ game.genre }}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Платформа:</span>
+            <span>{{ game.platform }}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Год выпуска:</span>
+            <span>{{ game.year }}</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Рейтинг:</span>
+            <span>{{ game.rating }}/10</span>
+          </div>
+          <div class="card-row">
+            <span class="label">Статус:</span>
+            <span v-if="game.completed" class="status-done">Пройдена</span>
+            <span v-else class="status-not">Не пройдена</span>
+          </div>
+          <div class="actions">
+            <button @click="toggle(game, 'completed')">
+              {{ game.completed ? 'Вернуть в список прохождения' : 'Отметить как пройденную' }}
+            </button>
+            <button class="btn-fav" @click="toggle(game, 'favorite')">
+              {{ game.favorite ? 'Удалить из избранного' : 'Добавить в избранное' }}
+            </button>
+            <button @click="startEdit(game)">Редактировать</button>
+            <button class="btn-delete" @click="deleteGame(game.id)">Удалить</button>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="card-header">Редактирование игры</div>
+          <div class="edit-row">
+            <input type="text" v-model.trim="editGame.title" placeholder="Название" />
+          </div>
+          <div class="edit-row">
+            <select v-model="editGame.genre">
+              <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+            </select>
+            <select v-model="editGame.platform">
+              <option v-for="platform in platforms" :key="platform" :value="platform">{{ platform }}</option>
+            </select>
+          </div>
+          <div class="edit-row">
+            <input type="number" v-model.number="editGame.year" placeholder="Год" />
+            <input type="number" v-model.number="editGame.rating" min="1" max="10" placeholder="Рейтинг" />
+          </div>
+          <div class="actions">
+            <button @click="saveEdit">Сохранить</button>
+            <button @click="cancelEdit">Отмена</button>
+          </div>
+        </template>
+      </div>
+    </div>
+    <footer class="site-footer">
+      GameHub — библиотека ваших игр © 2026
+    </footer>
   </div>
-  <button @click="active=!active">dasfasdf</button> -->
-
-
-<!-- <div :class="{active:isActive,error:hasError}">
-    Пользователь
-  </div>
-  <button @click="active=!active" :class="className">dasfasdf</button> 
-</template> -->
-
-
-  <!-- <p :class="isActive?'succes':'error'">sdfsdfsdfsf</p> -->
-
-
-  <!-- <li>
-  <div v-for="employee in employees":key="employee.id"
-  class="employee"
-  :class="{working:employee.active,
-  nerab:!employee.active}"> 
-    {{ employee.name }}
-    <span v-if="employee.active">Уволен</span>  
-    <span v-else>Работает</span>  
-     <button @click="toggleStatus(employee.id)">
-          {{ employee.active ? 'Уволить' : 'Восстановить' }}
-        </button>
-  </div>
-  </li> -->
-
-  <!-- Отправка форм данных из инпута в консоль -->
-  <!-- <form @submit.prevent="sendForm">
-    <input 
-    v-model="name"
-    type="text"
-    placeholder="Введите имя"
-    >
-    <input 
-    v-model="age"
-    type="number"
-    placeholder="Введите возвраст"
-    >
-    <label>
-    <input type="checkbox" v-model="agree">Я согласен с правилами
-    </label>
-    >
-    <button type="submit" :disabled="!agree">Отправить</button>
-  </form>   -->
-
-  <!-- получение знач по событию
-  <input 
-  type="text"
-  v-model.number="num"
-  placeholder="Введите число">
-  <button @click="calc">Вычеслить квадрат</button>
-  <p>{{ rezult }}</p> -->
-
-  
-  <!-- работа с select -->
-   <!-- <h2>В каком городе выживете</h2>
-  <select v-model="city">
-      <option value="">Выбери город</option>
-      <option value="краснодар">краснодар</option>
-      <option value="москва">москва</option>
-      <option value="сочи">сочи</option>
-  </select>
-  <p>
-    Вы выбрали:{{ city }}
-  </p>
-  <h2>Выберите название дня недели</h2>
-  <select v-model="nedela">
-      <option value="">Выберите недели дни</option>
-      <option value="Пн">Пн</option>
-      <option value="Вт">Вт</option>
-      <option value="Ср">Ср</option>
-      <option value="Чт">Чт</option>
-      <option value="Пт">Пт</option>
-      <option value="Сб">Сб</option>
-      <option value="Вс">Вс</option>
-  </select>
-  <p>
-    Вы выбрали:{{ nedela}}
-  </p> -->
-  <h2>Выберите дату</h2>
-   <select v-model="godd">
-      <option v-for="item in god":key="item":value="item">{{ item }}</option>
-  </select>
-  <select v-model="mesacc">
-      <option v-for="item in mesac":key="item":value="item">{{ item }}</option>
-  </select>
-  <select v-model="nedela">
-      <option v-for="item in days":key="item":value="item">{{ item }}</option>
-  </select>
-  <p>
-    Вы выбрали:{{ nedela}}:{{ mesacc }}:{{ godd }}
-  </p>
-
-
 </template>
+
 <style scoped>
-div{
-  width: 400px;
+.app-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: Arial, sans-serif;
+  color: #333;
 }
-.active{
-  color: blue;
+
+.site-header {
+  text-align: center;
+  padding: 1rem;
+  background-color: #2196f3;
+  border-radius: 8px;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.stats-block {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+  font-size: 1.4rem;
   font-weight: bold;
+  color: #2196f3;
 }
-.employee{
-  padding: 15px;
-  margin: 10px;
-  border: 1px solid black;
-  border-radius: 10px;
-  background-color: aliceblue;
-  color: black;
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.25rem;
 }
-.working{
-  background-color: aqua;
+
+.form-block,
+.filters-block {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
 }
-.nerab{
-  background-color: red;
+
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
 }
+
+.row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 160px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #2196f3;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1976d2;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+.btn-fav {
+  background-color: #f59e0b;
+}
+
+.btn-fav:hover {
+  background-color: #d97706;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card.is-completed {
+  border-left: 4px solid #22c55e;
+}
+
+.card.is-favorite {
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.card-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.fav-mark {
+  color: #f59e0b;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.label {
+  color: #666;
+}
+
+.status-done {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.status-not {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.actions button {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.edit-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.edit-row input,
+.edit-row select {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 2rem;
+  border: 1px dashed #e0e0e0;
+  border-radius: 8px;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  color: #888;
+  font-size: 0.85rem;
+  border-top: 1px solid #e0e0e0;
+}
+</style> -->
+
+
+
+
+
+
+
+<!-- урок1 -->
+<!-- <script setup>
+import Header from './components/Header.vue';
+import MainContent from './components/MainContent.vue';
+import Footer from './components/Footer.vue';
+</script>
+
+<template>
+  <div>
+    <h1>Главная страница</h1>
+    <Header/>
+    <MainContent/>
+    <Footer/>
+  </div>
+</template>
+
+<style scoped>
+
+
+</style> -->
+
+
+<!-- урок2 -->
+<script setup>
+import{ref} from 'vue'
+import UserCard from './components/UserCard.vue';
+// import UserCard from './components/UserCard.vue';
+// const name=ref("qwerty")
+// function changeName(){
+//   name.value="dddddddddd"
+// }
+
+const users=ref([
+  {
+    id:1,
+    name:"aboba",
+    age:20,
+    active:true
+  },
+  {
+    id:2,
+    name:"aboba2",
+    age:21,
+    active:true
+  },
+  {
+    id:3,
+    name:"aboba3",
+    age:22,
+    active:false
+  }
+])
+function removeUser(id){
+  users.value=users.value.filter(user=>user.id!==id)
+}
+
+</script>
+<template>
+  <div>
+    <!-- <UserCard
+    :name="name"
+    :age="age"
+    @chande-name="changeName"
+    /> -->
+
+
+    <UserCard
+    v-for="user in users":key="user.id"
+    :id="user.id"
+    :name="user.name"
+    :age="user.age"
+    @delete-user="removeUser"/>
+  </div>
+</template>
+
+<style scoped>
+
+
 </style>
